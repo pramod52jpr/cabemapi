@@ -1,11 +1,20 @@
 require("./db/conn");
 const express = require("express");
 const app = express();
+const cors = require("cors");
 const port = process.env.PORT || 3000;
 const Contact = require("./models/contact");
 const Token = require("./models/token");
 
 app.use(express.json());
+app.use(cors());
+app.use((req, res, next) => {
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, DELETE');
+    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, token');
+    res.header('Access-Control-Allow-Credentials', 'true');
+    next();
+});
 
 app.get("/contact", async (req, res) => {
     const token = req.headers["token"];
@@ -22,11 +31,11 @@ app.post("/contact", async (req, res) => {
     const token = req.headers["token"];
     const contactData = req.body;
     const tokenData = await Token.find({ token: token });
-    if(token){
+    if (token) {
         if (tokenData.length == 0) {
             res.send({ data: "No Data Added", message: "Invalid Api Token" });
         } else {
-            if (Object.values(contactData).length!=0) {
+            if (Object.values(contactData).length != 0) {
                 const contactDataRes = new Contact(contactData);
                 contactDataRes.save().then(() => {
                     res.send({ data: contactDataRes, message: "Success" });
@@ -37,7 +46,7 @@ app.post("/contact", async (req, res) => {
                 res.send({ data: "No Data Added", message: "Provide Some Data" });
             }
         }
-    }else{
+    } else {
         res.send({ data: "No Data Added", message: "Please Provide Api Token" });
     }
 })
