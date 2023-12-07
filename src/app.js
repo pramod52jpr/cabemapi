@@ -35,7 +35,7 @@ app.post("/contact", async (req, res) => {
         if (tokenData.length == 0) {
             res.send({ data: "No Data Added", message: "Invalid Api Token" });
         } else {
-            if (Object.values(contactData).length != 0) {
+            if (contactData) {
                 const contactDataRes = new Contact(contactData);
                 contactDataRes.save().then(() => {
                     res.send({ data: contactDataRes, message: "Success" });
