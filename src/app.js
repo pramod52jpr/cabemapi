@@ -51,6 +51,31 @@ app.post("/contact", async (req, res) => {
     }
 })
 
+app.delete("/contact", async (req, res) => {
+    const token = req.headers["token"];
+    const _id = req.headers["id"];
+    const tokenData = await Token.find({ token: token });
+    if (token) {
+        if (tokenData.length == 0) {
+            res.send({ data: "No Data Deleted", message: "Invalid Api Token" });
+        } else {
+            if (_id) {
+                try {
+                    const deleteDataRes = await Contact.deleteMany({ _id });
+                    res.send({ data: deleteDataRes, message: "Success" });
+                } catch (e) {
+                    res.send({ data: e, message: "Failed" });
+                }
+            }else{
+                res.send({ data: "No Data Deleted", message: "Provide Some Id" });
+            }
+        }
+    } else {
+        res.send({ data: "No Data Added", message: "Please Provide Api Token" });
+    }
+})
+
+
 app.listen(port, () => {
     console.log("Listening");
 })
